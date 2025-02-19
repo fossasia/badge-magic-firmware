@@ -7,6 +7,7 @@
 #include "power.h"
 #include "debug.h"
 #include "config.h"
+#include "leddrv.h"
 
 // TODO: Some of configs can be added, just listing:
 // - Remote brighness adjusting
@@ -127,6 +128,50 @@ uint8_t load_fallback_cfg(uint8_t *val, uint16_t len)
 	cfg_fallback(&badge_cfg);
 	return 0;
 }
+
+static uint8_t cfg_splash_speed(uint8_t *val, uint16_t len)
+{
+	PRINT(__func__);
+	PRINT("\n");
+
+	uint16_t ms = *((uint16_t *)val);
+	if (ms < SPLASH_MIN_SPEED_T)
+		return -2;
+
+	badge_cfg.splash_speedT = ms;
+	return 0;
+}
+
+static uint8_t cfg_led_brightness(uint8_t *val, uint16_t len)
+{
+	PRINT(__func__);
+	PRINT("\n");
+
+	uint8_t lvl = val[0];
+	if (lvl >= BRIGHTNESS_LEVELS)
+		return -2;
+
+	badge_cfg.led_brightness = lvl;
+	return 0;
+}
+
+uint8_t misc(uint8_t *val, uint16_t len)
+{
+	PRINT(__func__);
+	PRINT("\n");
+
+	const uint8_t (*misc_cmd[])(uint8_t *, uint16_t) = {
+		cfg_splash_speed,
+		cfg_led_brightness,
+	};
+
+	uint8_t fn = val[0];
+	if (fn >= (sizeof(misc_cmd) / sizeof(misc_cmd[0])))
+		return -1;
+
+	return misc_cmd[fn](&val[1], len - 1);
+}
+
 /* TODO: add a way to read configs */
 const uint8_t (*cmd_lut[])(uint8_t *val, uint16_t len) = {
 	next_packet, // Unsure if we need this
@@ -137,6 +182,7 @@ const uint8_t (*cmd_lut[])(uint8_t *val, uint16_t len) = {
 	flash_splash_screen,
 	save_cfg,
 	load_fallback_cfg,
+	misc,
 };
 
 #define CMD_LUT_LEN (sizeof(cmd_lut) / sizeof(cmd_lut[0]))

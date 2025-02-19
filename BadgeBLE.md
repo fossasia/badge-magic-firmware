@@ -75,9 +75,11 @@ The "mode" bytes are a combination of two 4 bit values. The high nibble describe
 
 - Service-UUID: 0xF055 (128-bit equivalent:
   0000f055-0000-1000-8000-00805f9b34fb)
+- Characteristic: 0xF057 (128-bit equivalent:
+  0000f057-0000-1000-8000-00805f9b34fb)
+  - Write property: to receive controls and configs
 - Characteristic: 0xF056 (128-bit equivalent:
   0000f056-0000-1000-8000-00805f9b34fb)
-  - Write property: to receive controls and configs
   - Notify property: to return error codes
   - Read property: to be implemented
 
@@ -98,6 +100,7 @@ Supported functions/commands:
 - flash_splash_screen
 - save_cfg
 - load_fallback_cfg
+- Miscellaneous configs
 
 The client app should enable notifications for the characteristic to receive the
 returned error code (e.g., by using setCharacteristicNotification() on Android).
@@ -212,4 +215,19 @@ Function/Command code: `0x07`.
 
 Returns:
 
+- Success: `0x00`.
+
+##### Miscellaneous configs
+
+Function/Command code: `0x08`.
+
+Parameters:
+
+- Adjust splash screen speed: `[0x00, speed_ms]`. `speed_ms` (16-bit) is the delay of each frame in milliseconds and must not be lower than 10 ms.
+- Adjust LED brightness: `[0x01, brightness_level]`. `brightness_level` has a value from 0 to 3.
+
+Returns:
+
+- Parameters out of range: `0xff`.
+- `speed_ms` or `brightness_level` is out of allowed range: `0x02`.
 - Success: `0x00`.

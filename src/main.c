@@ -33,8 +33,6 @@ enum MODES {
 	MODES_COUNT,
 };
 
-#define BRIGHTNESS_LEVELS   (4)
-
 #define ANI_BASE_SPEED_T      (200000) // uS
 #define ANI_MARQUE_SPEED_T    (100000) // uS
 #define ANI_FLASH_SPEED_T     (500000) // uS
@@ -52,12 +50,12 @@ enum MODES {
 static tmosTaskID common_taskid = INVALID_TASK_ID ;
 
 volatile uint16_t fb[LED_COLS] = {0};
-volatile int mode, is_play_sequentially = 1, brightness = 0;
+volatile int mode, is_play_sequentially = 1;
 
 __HIGH_CODE
 static void change_brightness()
 {
-	NEXT_STATE(brightness, 0, BRIGHTNESS_LEVELS);
+	NEXT_STATE(badge_cfg.led_brightness, 0, BRIGHTNESS_LEVELS);
 }
 
 static void mode_setup_download();
@@ -471,7 +469,7 @@ void TMR0_IRQHandler(void)
 				i = 0;
 			led_write2dcol(i >> 2, fb[i >> 1], fb[(i >> 1) + 1]);
 		}
-		else if (state > (brightness&3))
+		else if (state > (badge_cfg.led_brightness&3))
 			leds_releaseall();
 
 		TMR0_ClearITFlag(TMR0_3_IT_CYC_END);

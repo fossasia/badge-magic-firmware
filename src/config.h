@@ -6,6 +6,8 @@
 #include "xbm.h"
 #include "leddrv.h"
 
+#define SPLASH_MIN_SPEED_T (10) // ms
+
 #define SPLASH_MAX_WIDTH (48) // pixels
 #define SPLASH_MAX_HEIGHT (44) // pixels
 #define SPLASH_MAX_SIZE (ALIGN_1BYTE(SPLASH_MAX_WIDTH) * SPLASH_MAX_HEIGHT)
